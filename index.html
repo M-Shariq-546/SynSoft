@@ -1525,9 +1525,17 @@ ham.addEventListener('click',()=>mob.classList.toggle('open'));
 function closeMobile(){mob.classList.remove('open')}
 
 /* ══════════════════════════════════════
-   CONTACT FORM — EmailJS (static site; configure at https://www.emailjs.com)
-   - Allowlist your site domain in EmailJS · Owner template To: synsoftco@gmail.com
-   - User template To: {{user_email}} · Set keys below
+   CONTACT FORM — EmailJS
+   1) Sign in at https://www.emailjs.com
+   2) Account → General → copy "Public Key"  →  EMAILJS_PUBLIC_KEY
+   3) Email Services → your service (e.g. Gmail)  →  copy "Service ID"  →  EMAILJS_SERVICE_ID
+   4) Email Templates → create two (paste HTML from emailjs-templates.html):
+      - Notify Synsoft: To = synsoftco@gmail.com, Subject e.g. New: {{service_badge}}
+        Copy template ID  →  EMAILJS_TEMPLATE_NOTIFY
+      - Confirm visitor:  To = {{user_email}} (in template To field)
+        Copy template ID  →  EMAILJS_TEMPLATE_CONFIRM
+   5) Account / Security: allow your live site domain (e.g. https://synsoftco.com)
+   Replace the four strings below. Error "set ... public key" = still using REPLACE_...
 ══════════════════════════════════════ */
 const EMAILJS_PUBLIC_KEY = 'REPLACE_WITH_PUBLIC_KEY';
 const EMAILJS_SERVICE_ID = 'REPLACE_WITH_SERVICE_ID';
@@ -1587,12 +1595,12 @@ const SYNSOFT_EMAIL = 'synsoftco@gmail.com';
     errEl.style.display = 'none';
     errEl.textContent = '';
     if (EMAILJS_PUBLIC_KEY.indexOf('REPLACE_') === 0) {
-      errEl.textContent = 'Contact form: set EmailJS public key and template IDs in the script (see file header comment).';
+      errEl.textContent = 'Configuration needed: in index.html, replace the four EmailJS constants (EMAILJS_PUBLIC_KEY, SERVICE, both TEMPLATE_*) with your values from emailjs.com — see the long comment in the same script block.';
       errEl.style.display = 'block';
       return;
     }
     if (EMAILJS_SERVICE_ID.indexOf('REPLACE_') === 0 || EMAILJS_TEMPLATE_NOTIFY.indexOf('REPLACE_') === 0 || EMAILJS_TEMPLATE_CONFIRM.indexOf('REPLACE_') === 0) {
-      errEl.textContent = 'Contact form: set EmailJS service ID and both template IDs in the page script.';
+      errEl.textContent = 'Configuration needed: set EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, and EMAILJS_TEMPLATE_CONFIRM to your service and two template IDs from the EmailJS dashboard (see comment above those lines).';
       errEl.style.display = 'block';
       return;
     }

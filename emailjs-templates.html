@@ -11,7 +11,7 @@
   <p><strong>From <code>index.html</code> you send:</strong> <code>user_name</code>, <code>first_name</code>, <code>last_name</code>, <code>user_email</code>, <code>company</code>, <code>service</code>, <code>service_value</code>, <code>service_badge</code>, <code>message</code></p>
   <ul>
     <li>Template <em>notify</em>: <strong>To</strong> = fixed <code>synsoftco@gmail.com</code> — Subject e.g. <code>New lead: {{service_badge}}</code></li>
-    <li>Template <em>confirm</em>: <strong>To</strong> = <code>{{user_email}}</code> (EmailJS: use “To” field in template) — Subject e.g. <code>We received your message, {{first_name}}</code></li>
+    <li>Template <em>confirm</em>: <strong>To</strong> = <code>{{user_email}}</code> (EmailJS: use “To” field in template) — Subject e.g. <code>We received your message, {{first_name}}</code>. If this “To” is wrong or the variable name does not match <code>index.html</code> (<code>user_email</code>), the second <code>/send</code> call returns <strong>422</strong> while the notify email to Synsoft can still return 200.</li>
   </ul>
 
   <h2>1) Internally — new inquiry (Synsoft)</h2>

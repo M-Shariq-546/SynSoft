@@ -1301,6 +1301,7 @@ footer{
       <div style="font-size:2.5rem;margin-bottom:.8rem">🚀</div>
       <h3>Message Received!</h3>
       <p style="color:var(--muted);font-size:.9rem">Thank you for reaching out. The Synsoft team will get back to you within 24 hours.</p>
+      <p id="formSuccessPartial" style="display:none;margin-top:1rem;padding-top:1rem;border-top:1px solid rgba(26,110,255,.2);color:rgba(255,200,120,.95);font-size:.82rem;line-height:1.45" role="status">We could not send a copy to your inbox. Your message was still delivered to us. Check spam, or use <a href="mailto:synsoftco@gmail.com" style="color:var(--blue2)">synsoftco@gmail.com</a> if you need a confirmation.</p>
     </div>
   </div>
 </section>
@@ -1532,7 +1533,8 @@ function closeMobile(){mob.classList.remove('open')}
    4) Email Templates → create two (paste HTML from emailjs-templates.html):
       - Notify Synsoft: To = synsoftco@gmail.com, Subject e.g. New: {{service_badge}}
         Copy template ID  →  EMAILJS_TEMPLATE_NOTIFY
-      - Confirm visitor:  To = {{user_email}} (in template To field)
+      - Confirm visitor:  To = {{user_email}} (required — if empty/invalid, the second /send call returns 422;
+        the inquiry can still be delivered; fix the To field/variables in the EmailJS dashboard for autoreply)
         Copy template ID  →  EMAILJS_TEMPLATE_CONFIRM
    5) Account / Security: allow your live site domain (e.g. https://synsoftco.com)
    Replace the four strings below. Error "set ... public key" = still using REPLACE_...
@@ -1614,12 +1616,23 @@ const SYNSOFT_EMAIL = 'synsoftco@gmail.com';
       btn.disabled = false;
     };
     submitLabel();
+    var partialNote = document.getElementById('formSuccessPartial');
+    if (partialNote) partialNote.style.display = 'none';
     emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, params)
-      .then(function () { return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRM, params); })
       .then(function () {
+        return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRM, params).catch(function (confirmErr) {
+          console.error('EmailJS confirm template failed (visitor autoreply):', confirmErr);
+          return { _confirmOnlyFailed: true };
+        });
+      })
+      .then(function (secondResult) {
         form.style.display = 'none';
         errEl.style.display = 'none';
+        if (secondResult && secondResult._confirmOnlyFailed) {
+          if (partialNote) partialNote.style.display = 'block';
+        }
         successEl.style.display = 'block';
+        resetBtn();
       })
       .catch(function (err) {
         console.error(err);

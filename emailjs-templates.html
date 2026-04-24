@@ -17,10 +17,11 @@
   <h2>1) Internally — new inquiry (Synsoft)</h2>
   <textarea id="t1" readonly rows="24"></textarea>
 
-  <h2>2) Visitor — confirmation (same look)</h2>
-  <textarea id="t2" readonly rows="24"></textarea>
+  <h2>2) Visitor — professional confirmation (light card layout)</h2>
+  <textarea id="t2" readonly rows="36"></textarea>
 
   <p style="font-size:14px;color:#555">Allowlist your production origin in the EmailJS account, then set <code>EMAILJS_*</code> in <code>index.html</code> to the public key, service id, and both template ids.</p>
+  <p style="font-size:14px;color:#555">The confirmation template (section 2) uses the same fields as <code>buildParams()</code> in <code>index.html</code> (<code>first_name</code>, <code>user_name</code>, <code>user_email</code>, <code>company</code>, <code>service</code>, <code>service_badge</code>, <code>message</code>). For a <code>time</code> field, add it in that object and a matching row in the HTML.</p>
   <script>
   document.getElementById('t1').textContent = `<table width="100%" cellpadding="0" cellspacing="0" style="background:#050d1a;padding:32px 16px;">
 <tr><td align="center">
@@ -35,21 +36,64 @@
   <p style="color:#5a6a8a;font-size:12px;margin:16px 0 0;">Sent from your website contact form.</p>
 </td></tr>
 </table>`;
-  document.getElementById('t2').textContent = `<table width="100%" cellpadding="0" cellspacing="0" style="background:#050d1a;padding:32px 16px;">
-<tr><td align="center">
-  <table width="560" cellpadding="0" cellspacing="0" style="max-width:560px;background:#0a1628;border:1px solid #1a6eff;border-radius:12px;overflow:hidden;font-family:Segoe UI,Helvetica,Arial,sans-serif;">
-    <tr><td style="padding:20px 24px;background:linear-gradient(90deg,#1a6eff,#4d8eff);color:#f0f4ff;font-size:20px;font-weight:700;">synsoft</td></tr>
-    <tr><td style="padding:20px 24px 8px;color:#f0f4ff;font-size:18px;font-weight:700;">Thanks for reaching out, {{first_name}}.</td></tr>
-    <tr><td style="padding:0 24px 12px;color:#8899bb;font-size:15px;line-height:1.55;">We have received your message and will get back to you within <span style="color:#4d8eff;font-weight:600;">24 hours</span>. Here is a copy of your message.</td></tr>
-    <tr><td style="padding:8px 24px 0;background:#0d1830;">
-      <span style="display:inline-block;padding:4px 10px;border:1px solid #1a6eff;border-radius:6px;color:#1a6eff;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;">{{service_badge}}</span>
-    </td></tr>
-    <tr><td style="padding:8px 24px;color:#8899bb;font-size:14px;">{{service}}</td></tr>
-    <tr><td style="padding:0 24px 8px;color:#8899bb;font-size:14px;">Company: {{company}}</td></tr>
-    <tr><td style="padding:0 24px 20px;color:#f0f4ff;font-size:15px;line-height:1.55;">{{message}}</td></tr>
-    <tr><td style="padding:0 24px 24px;color:#5a6a8a;font-size:13px;border-top:1px solid rgba(26,110,255,0.2);padding-top:16px;">Reply to this message or contact <a href="mailto:synsoftco@gmail.com" style="color:#4d8eff;">synsoftco@gmail.com</a>.</td></tr>
-  </table>
-</td></tr>
+  document.getElementById('t2').textContent = `<table width="100%" cellpadding="0" cellspacing="0" style="background-color:#f4f6f8;padding:32px 12px;">
+  <tr>
+    <td align="center">
+      <table width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background-color:#ffffff;border:1px solid #e0e4ea;border-radius:8px;overflow:hidden;font-family:Arial,Helvetica,sans-serif;">
+        <tr>
+          <td style="background:linear-gradient(90deg,#1a6eff,#4d8eff);padding:20px 28px;">
+            <div style="color:#f0f4ff;font-size:20px;font-weight:700;letter-spacing:-0.02em;">synsoft</div>
+            <div style="color:rgba(240,244,255,0.9);font-size:12px;letter-spacing:0.1em;text-transform:uppercase;margin-top:4px;">Message received</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:28px 28px 8px;">
+            <p style="margin:0;color:#1a2a3a;font-size:18px;font-weight:600;line-height:1.4;">Thank you, {{first_name}}.</p>
+            <p style="margin:12px 0 0;color:#5a6b7c;font-size:15px;line-height:1.55;">We have received your message and will get back to you <strong style="color:#1a6eff;">within 24 hours</strong>. A brief copy of your submission is below for your records.</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 28px 20px;">
+            <span style="display:inline-block;padding:6px 12px;background-color:#e8f1ff;color:#1a6eff;border-radius:6px;font-size:12px;font-weight:600;letter-spacing:0.04em;">{{service_badge}}</span>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:0 28px;">
+            <table width="100%" cellpadding="0" cellspacing="0" style="border-top:1px dashed #d0d6de;border-bottom:1px dashed #d0d6de;padding:16px 0;">
+              <tr>
+                <td style="padding:6px 0;font-size:13px;color:#8899aa;width:120px;vertical-align:top;">Name</td>
+                <td style="padding:6px 0;font-size:14px;color:#2c3e50;vertical-align:top;">{{user_name}}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;font-size:13px;color:#8899aa;vertical-align:top;">Email</td>
+                <td style="padding:6px 0;font-size:14px;color:#2c3e50;vertical-align:top;">{{user_email}}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;font-size:13px;color:#8899aa;vertical-align:top;">Company</td>
+                <td style="padding:6px 0;font-size:14px;color:#2c3e50;vertical-align:top;">{{company}}</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 0;font-size:13px;color:#8899aa;vertical-align:top;">Service</td>
+                <td style="padding:6px 0;font-size:14px;color:#2c3e50;vertical-align:top;">{{service}}</td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:20px 28px 8px;">
+            <p style="margin:0;font-size:12px;font-weight:600;color:#8899aa;text-transform:uppercase;letter-spacing:0.08em;">Your message</p>
+            <p style="margin:10px 0 0;font-size:15px;color:#2c3e50;line-height:1.55;white-space:pre-wrap;">{{message}}</p>
+          </td>
+        </tr>
+        <tr>
+          <td style="padding:24px 28px 28px;">
+            <p style="margin:0;font-size:14px;color:#5a6b7c;line-height:1.5;">If you need to add anything, reply to this email or contact us at <a href="mailto:synsoftco@gmail.com" style="color:#1a6eff;text-decoration:none;">synsoftco@gmail.com</a>.</p>
+          </td>
+        </tr>
+      </table>
+      <p style="max-width:600px;margin:16px auto 0;padding:0 8px;font-size:11px;color:#9aa5b0;line-height:1.4;">This is an automated confirmation. Please do not share sensitive credentials by email.</p>
+    </td>
+  </tr>
 </table>`;
   </script>
 </body>

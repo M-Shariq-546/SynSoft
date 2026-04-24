@@ -621,6 +621,25 @@ h2{
   border-radius:12px;color:var(--blue2)
 }
 .form-success h3{font-family:var(--font-head);font-size:1.4rem;margin-bottom:.5rem;color:var(--white)}
+.form-error{
+  display:none;
+  background:rgba(255,80,80,.1);
+  border:1px solid rgba(255,100,100,.4);
+  border-radius:8px;
+  padding:.9rem 1.1rem;
+  margin-bottom:1rem;
+  color:#ffaaa8;
+  font-size:.9rem;
+  line-height:1.45
+}
+.form-submit:disabled{opacity:.65;transform:none!important;pointer-events:none}
+.form-submit.is-loading .form-submit-text{visibility:hidden}
+.form-submit.is-loading .form-submit-loading{display:inline}
+.form-submit .form-submit-loading{
+  position:absolute;left:50%;top:50%;
+  transform:translate(-50%,-50%);
+  display:none;font-size:.9rem;letter-spacing:.04em
+}
 
 /* ── FOOTER ── */
 footer{
@@ -1244,34 +1263,39 @@ footer{
   <div class="contact-form reveal-right">
     <div style="font-family:var(--font-head);font-size:1.3rem;font-weight:800;color:var(--white);margin-bottom:1.5rem">Send Us a Message</div>
     <form id="contactForm">
+      <div class="form-error" id="formError" role="alert"></div>
       <div class="form-row">
-        <div class="form-group"><label>First Name</label><input type="text" placeholder="John" required/></div>
-        <div class="form-group"><label>Last Name</label><input type="text" placeholder="Smith" required/></div>
+        <div class="form-group"><label for="firstName">First Name</label><input id="firstName" name="firstName" type="text" placeholder="John" autocomplete="given-name" required/></div>
+        <div class="form-group"><label for="lastName">Last Name</label><input id="lastName" name="lastName" type="text" placeholder="Smith" autocomplete="family-name" required/></div>
       </div>
-      <div class="form-group"><label>Email Address</label><input type="email" placeholder="john@company.com" required/></div>
-      <div class="form-group"><label>Company / Website</label><input type="text" placeholder="Your company or URL"/></div>
+      <div class="form-group"><label for="userEmail">Email Address</label><input id="userEmail" name="userEmail" type="email" placeholder="john@company.com" autocomplete="email" required/></div>
+      <div class="form-group"><label for="company">Company / Website</label><input id="company" name="company" type="text" placeholder="Your company or URL" autocomplete="organization"/></div>
       <div class="form-group">
-        <label>Service Needed</label>
-        <select>
+        <label for="service">Service Needed</label>
+        <select id="service" name="service" required>
           <option value="">Select a service...</option>
-          <option>Python / Django Development</option>
-          <option>React.js Frontend</option>
-          <option>Python Automations</option>
-          <option>CI/CD & DevOps</option>
-          <option>QA Testing</option>
-          <option>Business Analytics</option>
-          <option>Mobile App Development</option>
-          <option>AI & Machine Learning</option>
-          <option>Cloud Infrastructure</option>
-          <option>Web Security & Penetration Testing</option>
-          <option>Brand & Creative</option>
-          <option>Full-Stack Project</option>
-          <option>Partnership / Collaboration</option>
-          <option>Other</option>
+          <option value="django" data-label="Python / Django Development">Python / Django Development</option>
+          <option value="react" data-label="React.js Frontend">React.js Frontend</option>
+          <option value="automations" data-label="Python Automations">Python Automations</option>
+          <option value="devops" data-label="CI/CD &amp; DevOps">CI/CD & DevOps</option>
+          <option value="qa" data-label="QA Testing">QA Testing</option>
+          <option value="analytics" data-label="Business Analytics">Business Analytics</option>
+          <option value="mobile" data-label="Mobile App Development">Mobile App Development</option>
+          <option value="ml" data-label="AI &amp; Machine Learning">AI & Machine Learning</option>
+          <option value="cloud" data-label="Cloud Infrastructure">Cloud Infrastructure</option>
+          <option value="security" data-label="Web Security &amp; Penetration Testing">Web Security & Penetration Testing</option>
+          <option value="brand" data-label="Brand &amp; Creative">Brand & Creative</option>
+          <option value="fullstack" data-label="Full-Stack Project">Full-Stack Project</option>
+          <option value="partnership" data-label="Partnership / Collaboration">Partnership / Collaboration</option>
+          <option value="other" data-label="Other">Other</option>
         </select>
       </div>
-      <div class="form-group"><label>Tell Us About Your Project</label><textarea placeholder="Describe your project, timeline, and any specific requirements..."></textarea></div>
-      <button type="submit" class="form-submit"><span class="btn-shine"></span>Send Message →</button>
+      <div class="form-group"><label for="message">Tell Us About Your Project</label><textarea id="message" name="message" placeholder="Describe your project, timeline, and any specific requirements..." required></textarea></div>
+      <button type="submit" class="form-submit" id="formSubmit">
+        <span class="btn-shine"></span>
+        <span class="form-submit-text">Send Message →</span>
+        <span class="form-submit-loading" aria-hidden="true">Sending…</span>
+      </button>
     </form>
     <div class="form-success" id="formSuccess">
       <div style="font-size:2.5rem;margin-bottom:.8rem">🚀</div>
@@ -1292,6 +1316,7 @@ footer{
   </div>
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 /* ══════════════════════════════════════
    PARTICLE CANVAS — GitHub constellation
@@ -1500,13 +1525,102 @@ ham.addEventListener('click',()=>mob.classList.toggle('open'));
 function closeMobile(){mob.classList.remove('open')}
 
 /* ══════════════════════════════════════
-   FORM
+   CONTACT FORM — EmailJS (static site; configure at https://www.emailjs.com)
+   - Allowlist your site domain in EmailJS · Owner template To: synsoftco@gmail.com
+   - User template To: {{user_email}} · Set keys below
 ══════════════════════════════════════ */
-document.getElementById('contactForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  this.style.display='none';
-  document.getElementById('formSuccess').style.display='block';
-});
+const EMAILJS_PUBLIC_KEY = 'REPLACE_WITH_PUBLIC_KEY';
+const EMAILJS_SERVICE_ID = 'REPLACE_WITH_SERVICE_ID';
+const EMAILJS_TEMPLATE_NOTIFY = 'REPLACE_WITH_NOTIFY_TEMPLATE_ID';
+const EMAILJS_TEMPLATE_CONFIRM = 'REPLACE_WITH_CONFIRM_TEMPLATE_ID';
+const SYNSOFT_EMAIL = 'synsoftco@gmail.com';
+(function contactFormInit(){
+  const form = document.getElementById('contactForm');
+  const errEl = document.getElementById('formError');
+  const successEl = document.getElementById('formSuccess');
+  const btn = document.getElementById('formSubmit');
+  if (!form) return;
+  if (typeof emailjs === 'undefined') {
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      if (!form.checkValidity()) { form.reportValidity(); return; }
+      errEl.textContent = 'Email script did not load. Check your connection, or write to ' + SYNSOFT_EMAIL;
+      errEl.style.display = 'block';
+    });
+    return;
+  }
+  if (EMAILJS_PUBLIC_KEY && EMAILJS_PUBLIC_KEY.indexOf('REPLACE_') !== 0) {
+    try { emailjs.init(EMAILJS_PUBLIC_KEY); } catch (ign) {}
+  }
+  function getServiceLabel() {
+    const sel = form.querySelector('#service');
+    const o = sel && sel.options[sel.selectedIndex];
+    if (!o || !o.value) return '';
+    return o.getAttribute('data-label') || o.textContent.trim() || o.value;
+  }
+  function buildParams() {
+    const first = (form.querySelector('#firstName') && form.querySelector('#firstName').value) || '';
+    const last = (form.querySelector('#lastName') && form.querySelector('#lastName').value) || '';
+    const user_email = (form.querySelector('#userEmail') && form.querySelector('#userEmail').value.trim()) || '';
+    const serviceEl = form.querySelector('#service');
+    const service_value = serviceEl ? serviceEl.value : '';
+    return {
+      user_name: (first + ' ' + last).replace(/\s+/g, ' ').trim(),
+      first_name: first,
+      last_name: last,
+      user_email: user_email,
+      reply_to: user_email,
+      company: (form.querySelector('#company') && form.querySelector('#company').value.trim()) || '—',
+      service: getServiceLabel(),
+      service_value: service_value,
+      service_badge: getServiceLabel() || 'Inquiry',
+      message: (form.querySelector('#message') && form.querySelector('#message').value.trim()) || '',
+      to_email: SYNSOFT_EMAIL,
+    };
+  }
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    if (!form.checkValidity()) {
+      form.reportValidity();
+      return;
+    }
+    errEl.style.display = 'none';
+    errEl.textContent = '';
+    if (EMAILJS_PUBLIC_KEY.indexOf('REPLACE_') === 0) {
+      errEl.textContent = 'Contact form: set EmailJS public key and template IDs in the script (see file header comment).';
+      errEl.style.display = 'block';
+      return;
+    }
+    if (EMAILJS_SERVICE_ID.indexOf('REPLACE_') === 0 || EMAILJS_TEMPLATE_NOTIFY.indexOf('REPLACE_') === 0 || EMAILJS_TEMPLATE_CONFIRM.indexOf('REPLACE_') === 0) {
+      errEl.textContent = 'Contact form: set EmailJS service ID and both template IDs in the page script.';
+      errEl.style.display = 'block';
+      return;
+    }
+    const params = buildParams();
+    const submitLabel = function () {
+      btn.classList.add('is-loading');
+      btn.disabled = true;
+    };
+    const resetBtn = function () {
+      btn.classList.remove('is-loading');
+      btn.disabled = false;
+    };
+    submitLabel();
+    emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_NOTIFY, params)
+      .then(function () { return emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRM, params); })
+      .then(function () {
+        form.style.display = 'none';
+        errEl.style.display = 'none';
+        successEl.style.display = 'block';
+      })
+      .catch(function (err) {
+        console.error(err);
+        errEl.textContent = 'We could not send your message. Please try again in a few minutes, or email us at ' + SYNSOFT_EMAIL;
+        errEl.style.display = 'block';
+        resetBtn();
+      });
+  });
+})();
 </script>
 </body>
 </html>
